@@ -1,21 +1,28 @@
-import { ethers, zksync } from "zksync-ethers";
-import provider from "./zkProvider.js";
+import pkg from 'zksync-ethers';
+import 'dotenv/config';
+import { ethers } from 'ethers';
+import { RPC_URL } from './zkProvider.js';  // импортируем строку URL напрямую
 
-const wallets = {}; // В памяти для MVP, потом можно заменить на БД
 
-function createWallet() {
-    const wallet = zksync.Wallet.createRandom();
-    wallets[wallet.address] = wallet.privateKey;
-    return {
-        address: wallet.address,
-        privateKey: wallet.privateKey
-    };
+const { Wallet } = pkg;
+
+// Создание нового кошелька
+export function createWallet() {
+  const wallet = Wallet.createRandom();
+  return {
+    address: wallet.address,
+    privateKey: wallet.privateKey
+  };
 }
 
-async function getBalance(address) {
-    const wallet = new zksync.Wallet(wallets[address], provider);
-    const balanceBig = await wallet.getBalance("ETH");
-    return ethers.formatEther(balanceBig);
+// Проверка баланса
+export async function getBalance(address) {
+  try {
+    const ethProvider = new ethers.JsonRpcProvider(RPC_URL);
+    const balanceWei = await ethProvider.getBalance(address);
+    return ethers.formatEther(balanceWei);
+  } catch (err) {
+    console.error("Error fetching balance:", err);
+    throw err;
+  }
 }
-
-export default { createWallet, getBalance };

@@ -1,8 +1,3 @@
-import { ethers, zksync } from "zksync-ethers";
-import dotenv from "dotenv";
+import 'dotenv/config';
 
-dotenv.config();
-
-const provider = new zksync.Provider(`https://rpc.ankr.com/zksync_era_testnet?apikey=${process.env.ANCHOR_API_KEY}`);
-
-export default provider;
+export const RPC_URL = `https://rpc.ankr.com/zksync_era_sepolia?apikey=${process.env.ANKR_API_KEY}`;
